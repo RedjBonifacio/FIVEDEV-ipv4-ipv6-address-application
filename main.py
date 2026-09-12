@@ -25,36 +25,69 @@ def get_public_ip(version="ipv4"):
     return ip
 
 
-def get_ip_information(ip):
-    """Retrieve additional information about an IP address."""
-
-    url = f"https://ipinfo.io/{ip}/json"
+def get_ip_type(ip):
+    """Classify whether an IP address is public, private, or reserved."""
 
     try:
-        response = requests.get(url, timeout=10)
+        addr = ipaddress.ip_address(ip)
+    except ValueError:
+        return "Unknown"
+
+    if addr.is_loopback:
+        return "Loopback"
+    if addr.is_private:
+        return "Private"
+    if addr.is_reserved:
+        return "Reserved"
+    if addr.is_multicast:
+        return "Multicast"
+    if addr.is_link_local:
+        return "Link-Local"
+
+    return "Public"
+
+
+def get_ip_information(ip):
+    """Retrieve additional information about an IP address using ip-api.com."""
+
+    url = f"http://ip-api.com/json/{ip}"
+    fields = "status,message,country,regionName,city,zip,lat,lon,timezone,isp,org,query"
+
+    try:
+        response = requests.get(url, params={"fields": fields}, timeout=10)
         response.raise_for_status()
 
         data = response.json()
 
+        # ip-api.com returns status: "fail" when the lookup doesn't work
+        if data.get("status") == "fail":
+            raise ValueError(data.get("message", "Lookup failed."))
+
+        coordinates = "Unavailable"
+        if data.get("lat") is not None and data.get("lon") is not None:
+            coordinates = f"{data.get('lat')},{data.get('lon')}"
+
         return {
             "ip": ip,
             "version": "IPv6" if ":" in ip else "IPv4",
+            "ip_type": get_ip_type(ip),
             "city": data.get("city", "Unavailable"),
-            "region": data.get("region", "Unavailable"),
+            "region": data.get("regionName", "Unavailable"),
             "country": data.get("country", "Unavailable"),
             "timezone": data.get("timezone", "Unavailable"),
-            "organization": data.get("org", "Unavailable"),
-            "hostname": data.get("hostname", "Unavailable"),
-            "postal": data.get("postal", "Unavailable"),
-            "coordinates": data.get("loc", "Unavailable")
+            "organization": data.get("isp", "Unavailable"),
+            "hostname": "Unavailable",
+            "postal": data.get("zip", "Unavailable"),
+            "coordinates": coordinates
         }
 
-    except requests.exceptions.RequestException:
+    except (requests.exceptions.RequestException, ValueError):
         # IP address was detected,
         # but additional information was unavailable.
         return {
             "ip": ip,
             "version": "IPv6" if ":" in ip else "IPv4",
+            "ip_type": get_ip_type(ip),
             "city": "Unavailable",
             "region": "Unavailable",
             "country": "Unavailable",
@@ -78,6 +111,7 @@ def my_ip():
 
     ipv4 = None
     ipv6 = None
+    ipv6_error = None
 
     # Get IPv4
     try:
@@ -90,10 +124,12 @@ def my_ip():
     # Get IPv6
     try:
         ipv6 = get_public_ip("ipv6")
+    except requests.exceptions.ConnectionError:
+        ipv6_error = "No IPv6 connectivity detected on this network."
     except requests.exceptions.RequestException:
-        pass
+        ipv6_error = "IPv6 address could not be retrieved."
     except ValueError:
-        pass
+        ipv6_error = "IPv6 address could not be retrieved."
 
     # At least one address must be available
     if not ipv4 and not ipv6:
@@ -108,7 +144,7 @@ def my_ip():
     information = get_ip_information(primary_ip)
 
     information["ipv4"] = ipv4 if ipv4 else "Not available"
-    information["ipv6"] = ipv6 if ipv6 else "Not available"
+    information["ipv6"] = ipv6 if ipv6 else (ipv6_error or "Not available")
 
     return jsonify({
         "success": True,

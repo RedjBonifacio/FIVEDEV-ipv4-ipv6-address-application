@@ -15,11 +15,15 @@ const ipv6Value = document.getElementById("ipv6Value");
 
 const ipAddress = document.getElementById("ipAddress");
 const ipVersion = document.getElementById("ipVersion");
+const ipTypeBadge = document.getElementById("ipTypeBadge");
 const city = document.getElementById("city");
 const region = document.getElementById("region");
 const country = document.getElementById("country");
 const timezone = document.getElementById("timezone");
 const provider = document.getElementById("provider");
+
+const mapContainer = document.getElementById("mapContainer");
+const mapFrame = document.getElementById("mapFrame");
 
 const historyList = document.getElementById("historyList");
 
@@ -152,14 +156,45 @@ function displayIpData(data) {
         data.organization ||
         "Not available";
 
+    // IP type badge (Public / Private / Reserved / etc.)
+    if (ipTypeBadge && data.ip_type) {
+        ipTypeBadge.textContent = data.ip_type.toUpperCase();
+        ipTypeBadge.className = "badge badge-" + data.ip_type.toLowerCase();
+    }
+
     if (data.ipv4 !== undefined) {
         ipv4Value.textContent =
             data.ipv4 || "Not available";
     }
 
     if (data.ipv6 !== undefined) {
-        ipv6Value.textContent =
-            data.ipv6 || "Not available";
+        const ipv6Text = data.ipv6 || "Not available";
+        ipv6Value.textContent = ipv6Text;
+
+        // Detect if this is a real IPv6 address vs a status message
+        const looksLikeIp = ipv6Text.includes(":") && !ipv6Text.includes(" ");
+
+        ipv6Value.classList.toggle("long-text", !looksLikeIp);
+    }
+
+    // Map preview
+    if (mapFrame && mapContainer && data.coordinates && data.coordinates !== "Unavailable") {
+        const [lat, lon] = data.coordinates.split(",");
+        const delta = 0.15;
+
+        const bbox = [
+            parseFloat(lon) - delta,
+            parseFloat(lat) - delta,
+            parseFloat(lon) + delta,
+            parseFloat(lat) + delta
+        ].join(",");
+
+        mapFrame.src =
+            `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&marker=${lat},${lon}`;
+
+        mapContainer.style.display = "block";
+    } else if (mapContainer) {
+        mapContainer.style.display = "none";
     }
 }
 

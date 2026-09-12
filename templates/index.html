@@ -103,23 +103,7 @@
 
     <main class="dashboard">
 
-        <!-- RADAR -->
-
-        <section class="card radar-card">
-
-            <div class="radar">
-
-                <div class="radar-sweep"></div>
-
-                <div class="radar-center"></div>
-
-            </div>
-
-            <div class="radar-title">
-                NETWORK SCANNER ACTIVE
-            </div>
-
-        </section>
+        
 
 
         <!-- IP INFORMATION -->
@@ -130,7 +114,7 @@
 
                 <h2>Target Information</h2>
 
-                <span class="badge">
+                <span id="ipTypeBadge" class="badge">
                     TARGET FOUND
                 </span>
 
@@ -223,6 +207,19 @@
                     </strong>
 
                 </div>
+
+            </div>
+
+
+            <!-- Map Preview -->
+
+            <div class="map-container" id="mapContainer">
+
+                <iframe
+                    id="mapFrame"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                ></iframe>
 
             </div>
 

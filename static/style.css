@@ -177,7 +177,7 @@ button {
 
 .dashboard {
     display: grid;
-    grid-template-columns: 1.1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 22px;
 }
 
@@ -188,87 +188,7 @@ button {
     box-shadow: var(--shadow);
 }
 
-/* RADAR */
 
-.radar-card {
-    min-height: 390px;
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.radar {
-    position: relative;
-    width: 245px;
-    height: 245px;
-    border-radius: 50%;
-    border: 1px solid #334155;
-    background:
-        radial-gradient(circle, transparent 19%, #253142 20%, transparent 21%),
-        radial-gradient(circle, transparent 39%, #253142 40%, transparent 41%),
-        radial-gradient(circle, transparent 59%, #253142 60%, transparent 61%),
-        radial-gradient(circle, transparent 79%, #253142 80%, transparent 81%);
-}
-
-.radar::before,
-.radar::after {
-    content: "";
-    position: absolute;
-    background: #263344;
-}
-
-.radar::before {
-    width: 100%;
-    height: 1px;
-    top: 50%;
-    left: 0;
-}
-
-.radar::after {
-    width: 1px;
-    height: 100%;
-    left: 50%;
-    top: 0;
-}
-
-.radar-sweep {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: conic-gradient(
-        from 0deg,
-        transparent 0deg,
-        rgba(88, 214, 141, 0.3) 25deg,
-        transparent 55deg
-    );
-    animation: sweep 3s linear infinite;
-}
-
-.radar-center {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    left: calc(50% - 5px);
-    top: calc(50% - 5px);
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 16px var(--accent);
-}
-
-.radar-title {
-    margin-top: 24px;
-    font-size: 13px;
-    color: var(--muted);
-    letter-spacing: 1.5px;
-}
-
-@keyframes sweep {
-    to {
-        transform: rotate(360deg);
-    }
-}
 
 /* DETAILS */
 
@@ -381,6 +301,13 @@ button {
     font-size: 15px;
     color: var(--accent);
     word-break: break-all;
+}
+
+.address-value.long-text {
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--muted);
 }
 
 .copy-button {
@@ -556,10 +483,6 @@ body.light {
         display: none;
     }
 
-    .radar {
-        width: 190px;
-        height: 190px;
-    }
 
     .info-grid {
         grid-template-columns: 1fr;
@@ -572,4 +495,56 @@ body.light {
     .app {
         width: 94%;
     }
+}
+
+
+/* IP TYPE BADGE VARIANTS */
+
+.badge-public {
+    background: var(--accent-dark);
+    color: var(--accent);
+}
+
+.badge-private {
+    background: #3d2f19;
+    color: #e8a33d;
+}
+
+.badge-reserved,
+.badge-loopback,
+.badge-link-local,
+.badge-multicast,
+.badge-unknown {
+    background: #3d1919;
+    color: var(--danger);
+}
+
+/* LONG-TEXT VALUES (e.g. IPv6 status messages) */
+
+.address-value.long-text {
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--muted);
+}
+
+/* MAP PREVIEW */
+
+.map-container {
+    margin-top: 20px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    display: none;
+}
+
+.map-container iframe {
+    width: 100%;
+    height: 220px;
+    border: 0;
+    filter: grayscale(0.3) contrast(1.1);
+}
+
+body.light .map-container iframe {
+    filter: none;
 }
