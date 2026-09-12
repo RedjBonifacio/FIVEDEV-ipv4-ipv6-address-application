@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>FIVEDEV | IP Intelligence Console</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- =========================
+         TOP BAR
+    ========================== -->
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                IP
+            </div>
+
+            <div>
+                <h1>FIVEDEV</h1>
+                <span>IP INTELLIGENCE CONSOLE</span>
+            </div>
+
+        </div>
+
+        <div class="top-actions">
+
+            <div class="status">
+                <span class="status-dot"></span>
+                ONLINE
+            </div>
+
+            <button
+                id="themeButton"
+                class="theme-button"
+                type="button"
+                aria-label="Change theme"
+            >
+                ☾
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         SEARCH SECTION
+    ========================== -->
+
+    <section class="search-section">
+
+        <div class="search-box">
+
+            <input
+                id="searchInput"
+                class="search-input"
+                type="text"
+                placeholder="Enter IPv4 or IPv6 address..."
+                autocomplete="off"
+            >
+
+            <button
+                id="searchButton"
+                class="primary-button"
+                type="button"
+            >
+                Search
+            </button>
+
+            <button
+                id="myIpButton"
+                class="secondary-button"
+                type="button"
+            >
+                My IP
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         MAIN DASHBOARD
+    ========================== -->
+
+    <main class="dashboard">
+
+        
+
+
+        <!-- IP INFORMATION -->
+
+        <section class="card details-card">
+
+            <div class="card-heading">
+
+                <h2>Target Information</h2>
+
+                <span id="ipTypeBadge" class="badge">
+                    TARGET FOUND
+                </span>
+
+            </div>
+
+
+            <!-- Main IP -->
+
+            <div class="ip-main">
+
+                <div class="ip-label">
+                    IP Address
+                </div>
+
+                <div
+                    id="ipAddress"
+                    class="ip-address"
+                >
+                    Waiting for data...
+                </div>
+
+            </div>
+
+
+            <!-- Information -->
+
+            <div class="info-grid">
+
+                <div class="info-item">
+
+                    <small>IP Version</small>
+
+                    <strong id="ipVersion">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <small>City</small>
+
+                    <strong id="city">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <small>Region</small>
+
+                    <strong id="region">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <small>Country</small>
+
+                    <strong id="country">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <small>Timezone</small>
+
+                    <strong id="timezone">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <small>Provider</small>
+
+                    <strong id="provider">
+                        —
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- Map Preview -->
+
+            <div class="map-container" id="mapContainer">
+
+                <iframe
+                    id="mapFrame"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                ></iframe>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         IPV4 / IPV6 SECTION
+    ========================== -->
+
+    <section class="address-section">
+
+        <h2>
+            Public Address Information
+        </h2>
+
+
+        <div class="address-list">
+
+            <!-- IPv4 -->
+
+            <div class="address-box">
+
+                <h3>
+                    PUBLIC IPv4
+                </h3>
+
+                <div
+                    id="ipv4Value"
+                    class="address-value"
+                >
+                    Not available
+                </div>
+
+                <button
+                    class="copy-button"
+                    type="button"
+                    onclick="copyAddress('ipv4')"
+                >
+                    Copy IPv4
+                </button>
+
+            </div>
+
+
+            <!-- IPv6 -->
+
+            <div class="address-box">
+
+                <h3>
+                    PUBLIC IPv6
+                </h3>
+
+                <div
+                    id="ipv6Value"
+                    class="address-value"
+                >
+                    Not available
+                </div>
+
+                <button
+                    class="copy-button"
+                    type="button"
+                    onclick="copyAddress('ipv6')"
+                >
+                    Copy IPv6
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         HISTORY
+    ========================== -->
+
+    <section class="card history-card">
+
+        <div class="card-heading">
+
+            <h2>
+                Search History
+            </h2>
+
+        </div>
+
+        <div
+            id="historyList"
+            class="history-list"
+        >
+
+            <div class="empty-history">
+                No previous IP searches.
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- =========================
+     LOADING OVERLAY
+========================== -->
+
+<div
+    id="loading"
+    class="loading"
+>
+
+    <div class="loading-box">
+
+        <div class="loader"></div>
+
+        <p>
+            Retrieving IP information...
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     TOAST MESSAGE
+========================== -->
+
+<div
+    id="toast"
+    class="toast"
+></div>
+
+
+<!-- =========================
+     JAVASCRIPT
+========================== -->
+
+<script
+    src="{{ url_for('static', filename='script.js') }}"
+></script>
+
+</body>
+</html>
